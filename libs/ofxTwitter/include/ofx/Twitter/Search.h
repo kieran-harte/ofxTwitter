@@ -21,7 +21,7 @@ namespace Twitter {
 
 /// \brief A Twitter Search Request.
 ///
-/// \sa https://dev.twitter.com/rest/reference/get/search/tweets
+/// \sa https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets
 class SearchQuery: public Poco::Net::NameValueCollection
 {
 public:
@@ -44,6 +44,15 @@ public:
                     double longitude,
                     double radius,
                     const std::string& units);
+    
+    struct Location {
+        double lat;
+        double lng;
+        double rad;
+        std::string units;
+    };
+
+    void setGeoCode(Location location);
 
     /// \brief The 2 letter language code.
     /// \sa https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes

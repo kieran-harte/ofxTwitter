@@ -95,9 +95,24 @@ void ofApp::onDisconnect()
 void ofApp::onStatus(const ofxTwitter::Status& status)
 {
     count++;
-    ofLogNotice("ofApp::onStatus") << "Text: " << status.text();
-    ofLogNotice("ofApp::onStatus") << "\tCoordinates: " << (status.coordinates() ? ofToString(status.coordinates()) : "NONE");
-    ofLogNotice("ofApp::onStatus") << "\tPlace: " << (status.place() ? ofToString(status.place()->fullName()) : "NONE");
+
+
+    if (status.isRetweet())
+    {
+//        ofLogNotice("ofApp::onStatus") << "Text: " << status.text();
+//        ofLogNotice("ofApp::onStatus") << "\tOriginal mesage: " << status.retweetedStatus()->text();
+    }
+    else
+    {
+        ofLogNotice("ofApp::onStatus") << "Text: " << status.text();
+        ofLogNotice("ofApp::onStatus") << "Text: " << status.displayText();
+
+        std::cout << status.json().dump(4) << std::endl;
+
+      //  assert(status.text() == status.displayText()appl);
+
+        std::cout << "----------------------------------------------------" << std::endl;
+    }
 }
 
 

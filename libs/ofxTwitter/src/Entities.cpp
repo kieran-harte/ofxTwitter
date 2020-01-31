@@ -501,6 +501,41 @@ VideoInfo VideoInfo::fromJSON(const ofJson& json)
 }
 
 
+CallToAction CallToAction::fromJSON(const ofJson& json)
+{
+    CallToAction call;
+
+    auto iter = json.cbegin();
+    while (iter != json.cend())
+    {
+        const auto& key = iter.key();
+        const auto& value = iter.value();
+
+        if (value.is_null())
+        {
+            ofLogError("CallToAction::fromJSON") << "Value is NULL, key = " << key;
+            ++iter;
+            continue;
+        }
+
+
+        if (key == "visit_site")
+        {
+            call.visitSiteURL = value.value("url", "");
+        }
+        else if (key == "watch_now")
+        {
+            call.watchNowURL = value.value("url", "");
+        }
+        else ofLogWarning("CallToAction::fromJSON") << "Unknown key: " << key;
+
+        ++iter;
+    }
+
+    return call;
+}
+
+
 bool AdditionalMediaInfo::monetizable() const
 {
     return _montetizable;
@@ -528,6 +563,12 @@ std::string AdditionalMediaInfo::title() const
 std::shared_ptr<User> AdditionalMediaInfo::sourceUser() const
 {
     return _sourceUser;
+}
+
+
+std::vector<CallToAction> AdditionalMediaInfo::callToActions() const
+{
+    return _callToActions;
 }
 
 
@@ -562,6 +603,10 @@ AdditionalMediaInfo AdditionalMediaInfo::fromJSON(const ofJson& json)
         {
             info._title = value;
         }
+        else if (key == "call_to_actions")
+        {
+            info._callToActions = { CallToAction::fromJSON(value) };
+        }
         else ofLogWarning("AdditionalMediaInfo::fromJson") << "Unknown key: " << key << " : " << value.dump(4);
 
         ++iter;
@@ -582,6 +627,7 @@ MediaEntity::MediaEntity(std::size_t startIndex,
                          const std::string& url,
                          const std::string& displayURL,
                          const std::string& expandedURL,
+                         const std::string& description,
                          const std::string& mediaURL,
                          const std::string& secureMediaURL,
                          int64_t mediaID,
@@ -593,6 +639,7 @@ MediaEntity::MediaEntity(std::size_t startIndex,
     URLEntity(startIndex, endIndex, url, displayURL, expandedURL),
     _mediaURL(mediaURL),
     _secureMediaURL(secureMediaURL),
+    _description(description),
     _mediaID(mediaID),
     _type(type),
     _sizes(sizes),
@@ -605,6 +652,12 @@ MediaEntity::MediaEntity(std::size_t startIndex,
 
 MediaEntity::~MediaEntity()
 {
+}
+
+
+std::string MediaEntity::description() const
+{
+    return _description;
 }
 
 
@@ -695,6 +748,7 @@ MediaEntity MediaEntity::fromJson(const ofJson& json)
         const auto& value = iter.value();
 
         if (Utils::endsWith(key, "_str")) { /* skip */ }
+        else if (key == "description") entity._description = value;
         else if (key == "indices")
         {
             if (value.size() == 2)
@@ -727,7 +781,6 @@ MediaEntity MediaEntity::fromJson(const ofJson& json)
 
         ++iter;
     }
-
 
     return entity;
 }

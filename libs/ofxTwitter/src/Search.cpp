@@ -48,6 +48,11 @@ void SearchQuery::setGeoCode(double latitude,
     set("geocode", ss.str());
 }
 
+void SearchQuery::setGeoCode(Location location)
+{
+    setGeoCode(location.lat, location.lng, location.rad, location.units);
+}
+
 
 void SearchQuery::setLanguage(const std::string& language)
 {
